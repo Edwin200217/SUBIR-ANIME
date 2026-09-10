@@ -103,9 +103,16 @@ export async function getMediaBlobUrl(key: string): Promise<string | null> {
 export function getStoredAnimes(): Anime[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.ANIMES);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) {
+      return loadDemoContent();
+    }
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return loadDemoContent();
+    }
+    return parsed;
   } catch {
-    return [];
+    return loadDemoContent();
   }
 }
 

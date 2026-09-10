@@ -4,784 +4,1098 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KAGESTREAM - Tu universo anime comienza aquí</title>
-  <meta name="description" content="Plataforma web profesional de streaming de anime con estética oscura y gestión completa." />
+  <meta name="description" content="Plataforma de streaming y gestión de anime con estética cinematográfica oscura." />
   
-  <!-- Tipografías -->
+  <!-- Tipografía Google Fonts con fallback seguro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
-
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            display: ['Syne', 'sans-serif']
-          },
-          colors: {
-            brand: {
-              red: '#E50914',
-              dark: '#07090e',
-              panel: '#0d111a'
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <!-- React 18 & Babel Standalone -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap" rel="stylesheet">
 
   <style>
-    body {
-      background-color: #07090e;
-      color: #f1f5f9;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      overflow-x: hidden;
+    /* RESET & VARIABLES GLOBALES */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    .glass-panel {
-      background: rgba(13, 17, 26, 0.75);
+    :root {
+      --bg-dark: #07090e;
+      --bg-panel: #0d111a;
+      --bg-card: #131824;
+      --brand-red: #E50914;
+      --brand-red-hover: #b80710;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-display: 'Syne', 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar estilizado */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: #222938; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #374151; }
+
+    /* UTILIDADES */
+    .glass {
+      background: rgba(13, 17, 26, 0.85);
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
     }
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    .text-gradient {
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    ::-webkit-scrollbar-track {
-      background: #07090e;
+    .red-glow {
+      box-shadow: 0 0 25px rgba(229, 9, 20, 0.45);
     }
-    ::-webkit-scrollbar-thumb {
-      background: #334155;
-      border-radius: 9999px;
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #64748b;
+    .btn-red {
+      background: var(--brand-red);
+      color: white;
+    }
+    .btn-red:hover {
+      background: var(--brand-red-hover);
+      box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4);
+      transform: translateY(-1px);
+    }
+    .btn-dark {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border: 1px solid var(--border-subtle);
+    }
+    .btn-dark:hover {
+      background: rgba(255, 255, 255, 0.18);
+      transform: translateY(-1px);
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-red {
+      background: rgba(229, 9, 20, 0.2);
+      color: #ff4d56;
+      border: 1px solid rgba(229, 9, 20, 0.35);
+    }
+    .badge-gray {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+    }
+
+    /* ANIMACIONES */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .animate-fade {
+      animation: fadeIn 0.35s ease forwards;
+    }
+
+    /* GRID ANIME CARDS */
+    .anime-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    @media (max-width: 640px) {
+      .anime-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+    }
+
+    .anime-card {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .anime-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+      border-color: rgba(229, 9, 20, 0.4);
+    }
+    .anime-card .poster-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      background: #111;
+    }
+    .anime-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .anime-card:hover img {
+      transform: scale(1.06);
+    }
+    .anime-card .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(7, 9, 14, 0.95) 100%);
+      opacity: 0.9;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 14px;
+    }
+
+    /* MODAL GENERAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: var(--bg-panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      position: relative;
+    }
+
+    /* INTRO NETFLIX ANIMATION */
+    #netflix-intro {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: opacity 0.5s ease;
+    }
+    #netflix-intro.hidden-intro {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .nfx-letter {
+      font-family: var(--font-display);
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--brand-red);
+      text-shadow: 0 0 40px rgba(229, 9, 20, 0.9);
+      animation: zoomLogo 2.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes zoomLogo {
+      0% { transform: scale(0.6); opacity: 0; }
+      25% { transform: scale(1); opacity: 1; }
+      80% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-panel);
+      border: 1px solid var(--brand-red);
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: white;
+      font-size: 14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 10000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+  <!-- INTRO ESTILO NETFLIX (Autoejecutable con audio Ta-Dum) -->
+  <div id="netflix-intro" onclick="finishIntro()">
+    <div class="nfx-letter">KAGESTREAM</div>
+    <div style="color: #64748b; font-size: 13px; margin-top: 16px; letter-spacing: 2px;">CLICK PARA SALTAR INTRO</div>
+  </div>
 
-    // --- ICONOS SVG INLINE (Ligeros y sin dependencias externas) ---
-    const Icon = ({ name, className = "w-4 h-4" }) => {
-      const icons = {
-        play: <path d="M5 3l14 9-14 9V3z" fill="currentColor"/>,
-        pause: <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" fill="currentColor"/>,
-        plus: <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>,
-        check: <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>,
-        trash: <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>,
-        star: <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/>,
-        x: <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>,
-        search: <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>,
-        upload: <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>,
-        sparkles: <path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.5 7.5L23 11l-7.5 2.5L13 21l-2.5-7.5L3 11l7.5-2.5L13 1z" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>,
-        clapperboard: <path d="M4 11v8a2 2 0 002 2h12a2 2 0 002-2v-8H4zm0-3l2.5-4h3l-2.5 4H4zm7.5 0l2.5-4h3l-2.5 4h-3zM19 8l1.5-2.5a2 2 0 00-.5-1.5H18l-2.5 4H19z" fill="none" stroke="currentColor" strokeWidth="2"/>,
-        film: <path d="M2 4h20v16H2V4zm4 0v16M18 4v16M2 8h4M2 12h4M2 16h4M18 8h4M18 12h4M18 16h4" fill="none" stroke="currentColor" strokeWidth="2"/>,
-        clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none"/>,
-        info: <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" strokeWidth="2" fill="none"/>,
-        subtitles: <path d="M4 6h16a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2zm3 6h3m4 0h3m-10 3h7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>,
-        volume: <path d="M11 5L6 9H2v6h4l5 4V5zm4.5 3.5a5 5 0 010 7M19 5a9 9 0 010 14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none"/>
-      };
-      return (
-        <svg viewBox="0 0 24 24" className={className} fill="none">
-          {icons[name] || icons.info}
-        </svg>
-      );
-    };
+  <!-- TOAST NOTIFICACIONES -->
+  <div id="toast">
+    <span id="toast-icon">✓</span>
+    <span id="toast-msg">Mensaje</span>
+  </div>
 
-    // --- CATÁLOGO DEMO INICIAL ---
+  <!-- NAVBAR -->
+  <header style="position: sticky; top: 0; z-index: 500; border-bottom: 1px solid var(--border-subtle);" class="glass">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+      
+      <!-- LOGO -->
+      <div style="display: flex; align-items: center; gap: 30px;">
+        <div onclick="setTab('home')" style="cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--brand-red); font-size: 26px; font-family: var(--font-display); font-weight: 900; letter-spacing: -0.5px;">KAGESTREAM</span>
+          <span class="badge badge-red" style="font-size: 9px;">PRO</span>
+        </div>
+
+        <!-- NAVEGACIÓN -->
+        <nav style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn btn-dark" id="nav-home" onclick="setTab('home')" style="padding: 6px 14px; font-size: 13px;">Inicio</button>
+          <button class="btn btn-dark" id="nav-series" onclick="setTab('series')" style="padding: 6px 14px; font-size: 13px;">Series</button>
+          <button class="btn btn-dark" id="nav-movies" onclick="setTab('movies')" style="padding: 6px 14px; font-size: 13px;">Películas</button>
+          <button class="btn btn-dark" id="nav-mylist" onclick="setTab('mylist')" style="padding: 6px 14px; font-size: 13px;">Mi Lista (<span id="mylist-count">0</span>)</button>
+        </nav>
+      </div>
+
+      <!-- BUSCADOR & ACCIONES -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="position: relative; width: 240px;">
+          <input 
+            type="text" 
+            id="search-input" 
+            placeholder="Buscar anime, género..." 
+            oninput="handleSearch(this.value)"
+            style="width: 100%; background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 7px 16px 7px 34px; color: white; font-size: 13px; outline: none;"
+          />
+          <span style="position: absolute; left: 12px; top: 8px; color: #64748b; font-size: 13px;">🔍</span>
+        </div>
+
+        <button class="btn btn-red" onclick="openUploadModal()" style="padding: 7px 16px; font-size: 13px;">
+          <span>+</span> Subir Anime
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main style="max-width: 1400px; margin: 0 auto; padding: 24px; min-height: 80vh;">
+
+    <!-- HERO FEATURED BANNER -->
+    <section id="hero-section" style="position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 40px; min-height: 480px; display: flex; align-items: flex-end; border: 1px solid var(--border-subtle);">
+      <!-- Fondo imagen con gradiente -->
+      <img id="hero-bg" src="" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1;" alt="Hero Banner" />
+      <div style="position: absolute; inset: 0; background: linear-gradient(0deg, #07090e 10%, rgba(7,9,14,0.7) 60%, rgba(7,9,14,0.3) 100%), linear-gradient(90deg, #07090e 0%, rgba(7,9,14,0.85) 45%, transparent 100%); z-index: 2;"></div>
+
+      <!-- Contenido Hero -->
+      <div style="position: relative; z-index: 3; padding: 40px; max-width: 700px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center;">
+          <span class="badge badge-red">DESTACADO</span>
+          <span class="badge badge-gray" id="hero-quality">4K ULTRA HD</span>
+          <span class="badge badge-gray" id="hero-rating">16+</span>
+          <span style="color: #94a3b8; font-size: 13px;" id="hero-year">2026</span>
+        </div>
+
+        <h1 id="hero-title" style="font-size: 42px; font-family: var(--font-display); font-weight: 800; line-height: 1.15; margin-bottom: 14px;" class="text-gradient">
+          Cargando título...
+        </h1>
+
+        <p id="hero-desc" style="color: #cbd5e1; font-size: 15px; line-height: 1.6; margin-bottom: 24px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+          Cargando sinopsis...
+        </p>
+
+        <div style="display: flex; gap: 14px; align-items: center; flex-wrap: wrap;">
+          <button class="btn btn-red red-glow" onclick="playHeroAnime()" style="padding: 12px 28px; font-size: 15px;">
+            ▶ Reproducir Ahora
+          </button>
+          <button class="btn btn-dark" onclick="viewHeroDetails()" style="padding: 12px 24px;">
+            ℹ Más Información
+          </button>
+          <button class="btn btn-dark" id="hero-btn-list" onclick="toggleHeroList()" style="padding: 12px 20px;">
+            + Mi Lista
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BARRA DE GÉNEROS -->
+    <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 16px; margin-bottom: 24px;" id="genre-bar">
+      <!-- Se llena dinámicamente -->
+    </div>
+
+    <!-- SECCIÓN CATÁLOGO -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+      <h2 id="section-title" style="font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
+        <span>🔥 Todos los Animes</span>
+        <span style="font-size: 13px; color: #64748b; font-weight: 500;" id="catalog-count">(3 títulos)</span>
+      </h2>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-dark" onclick="resetCatalog()" style="padding: 6px 12px; font-size: 12px;">Restaurar Demo</button>
+      </div>
+    </div>
+
+    <!-- GRID DE ANIMES -->
+    <div class="anime-grid" id="anime-container">
+      <!-- Tarjetas inyectadas vía JS -->
+    </div>
+
+    <!-- ESTADO VACÍO (si no hay resultados) -->
+    <div id="empty-state" style="display: none; text-align: center; padding: 60px 20px; background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-subtle); margin-top: 20px;">
+      <div style="font-size: 42px; margin-bottom: 12px;">📺</div>
+      <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;">No se encontraron animes</h3>
+      <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;">No hay resultados con el filtro actual o tu lista está vacía.</p>
+      <button class="btn btn-red" onclick="setTab('home')">Explorar Todo el Catálogo</button>
+    </div>
+  </main>
+
+  <!-- MODAL REPRODUCTOR DE VIDEO COMPLETO -->
+  <div class="modal-backdrop" id="player-modal">
+    <div class="modal-box" style="max-width: 1000px; background: #000; padding: 0; overflow: hidden; border: 1px solid rgba(229,9,20,0.3);">
+      
+      <!-- Barra superior del reproductor -->
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: rgba(13,17,26,0.9); border-bottom: 1px solid var(--border-subtle);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="badge badge-red">KAGE-PLAYER</span>
+          <h4 id="player-title" style="font-size: 15px; font-weight: 700; color: white;">Reproduciendo</h4>
+        </div>
+        <button onclick="closePlayer()" class="btn btn-dark" style="padding: 6px 14px; font-size: 13px;">✕ Cerrar</button>
+      </div>
+
+      <!-- Video Element -->
+      <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000;">
+        <video 
+          id="main-video" 
+          controls 
+          autoplay 
+          style="width: 100%; height: 100%; object-fit: contain;"
+          poster=""
+        >
+          <source src="" type="video/mp4">
+          Tu navegador no soporta el reproductor de video HTML5.
+        </video>
+      </div>
+
+      <!-- Info del episodio bajo el video -->
+      <div style="padding: 16px 20px; background: var(--bg-panel); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h5 id="player-sub" style="font-size: 14px; font-weight: 600; color: #f1f5f9;">Episodio 1</h5>
+          <p id="player-desc" style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Transmisión en alta definición sin interrupciones.</p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-dark" onclick="toggleFullscreenVideo()" style="font-size: 12px; padding: 6px 12px;">⛶ Pantalla Completa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DETALLES DE ANIME -->
+  <div class="modal-backdrop" id="details-modal">
+    <div class="modal-box" style="padding: 0; overflow: hidden;">
+      <div style="position: relative; height: 260px;">
+        <img id="modal-banner" src="" style="width: 100%; height: 100%; object-fit: cover;" alt="Banner" />
+        <div style="position: absolute; inset: 0; background: linear-gradient(0deg, var(--bg-panel) 5%, transparent 90%);"></div>
+        <button onclick="closeModal('details-modal')" style="position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,0.6); border: 1px solid var(--border-subtle); color: white; width: 34px; height: 34px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">✕</button>
+      </div>
+
+      <div style="padding: 24px;">
+        <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap;">
+          <span class="badge badge-red" id="modal-type">SERIE</span>
+          <span class="badge badge-gray" id="modal-quality">4K</span>
+          <span class="badge badge-gray" id="modal-status">EN EMISIÓN</span>
+          <span style="color: #94a3b8; font-size: 13px;" id="modal-year">2026</span>
+          <span style="color: #64748b; font-size: 13px;">•</span>
+          <span style="color: #94a3b8; font-size: 13px;" id="modal-views">👁 12,480 vistas</span>
+        </div>
+
+        <h3 id="modal-title" style="font-size: 28px; font-family: var(--font-display); font-weight: 800; margin-bottom: 12px;">Título</h3>
+
+        <div id="modal-genres" style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px;"></div>
+
+        <p id="modal-desc" style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 24px;"></p>
+
+        <!-- Botones de Acción -->
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 28px;">
+          <button class="btn btn-red" id="modal-play-btn" onclick="playDetailsAnime()">
+            ▶ Ver Ahora
+          </button>
+          <button class="btn btn-dark" id="modal-list-btn" onclick="toggleDetailsList()">
+            + Mi Lista
+          </button>
+          <button class="btn btn-dark" onclick="deleteCurrentModalAnime()" style="color: #ef4444; border-color: rgba(239,68,68,0.3); margin-left: auto;">
+            🗑 Eliminar
+          </button>
+        </div>
+
+        <!-- Lista de Episodios si tiene -->
+        <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+          Episodios Disponibles
+        </h4>
+        <div id="modal-episodes" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Episodios inyectados -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL SUBIR / AGREGAR ANIME -->
+  <div class="modal-backdrop" id="upload-modal">
+    <div class="modal-box" style="padding: 24px; max-width: 620px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+        <h3 style="font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span style="color: var(--brand-red);">+</span> Agregar Nuevo Anime al Catálogo
+        </h3>
+        <button onclick="closeModal('upload-modal')" class="btn btn-dark" style="padding: 4px 10px;">✕</button>
+      </div>
+
+      <form onsubmit="handleUploadSubmit(event)" style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Título del Anime *</label>
+          <input type="text" id="up-title" required placeholder="Ej: Solo Leveling: Arise" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;" />
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Tipo</label>
+            <select id="up-type" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;">
+              <option value="Serie">Serie de TV</option>
+              <option value="Película">Película</option>
+              <option value="OVA">OVA / Especial</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Año de Estreno</label>
+            <input type="number" id="up-year" value="2026" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;" />
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Géneros (separados por coma)</label>
+          <input type="text" id="up-genres" placeholder="Acción, Fantasía, Shonen" value="Acción, Fantasía" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">URL del Póster (Vertical)</label>
+          <input type="url" id="up-poster" placeholder="https://images.unsplash.com/..." value="https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">URL del Video (MP4 / WebM)</label>
+          <input type="url" id="up-video" placeholder="https://commondatastorage.googleapis.com/..." value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;" />
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #cbd5e1;">Sinopsis</label>
+          <textarea id="up-desc" rows="3" placeholder="Describe la trama del anime..." style="width: 100%; background: #1a2234; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 14px; color: white; font-size: 14px;"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+          <button type="button" onclick="closeModal('upload-modal')" class="btn btn-dark">Cancelar</button>
+          <button type="submit" class="btn btn-red">Publicar Anime</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT NATIVO UNIVERSAL (100% CERO COMPILADOR, CERO BABEL, APERTURA INSTANTÁNEA EN CUALQUIER NAVEGADOR) -->
+  <script>
+    // DATOS DE DEMOSTRACIÓN INICIALES
     const DEFAULT_ANIMES = [
       {
-        id: "solo-leveling",
-        title: "Solo Leveling: Arise",
-        altTitle: "Ore dake Level Up na Ken",
-        synopsis: "En un mundo donde cazadores despiertan habilidades mágicas para luchar contra monstruos de portales, Sung Jinwoo es el más débil. Tras un incidente mortal en una doble mazmorra, despierta con un misterioso sistema de jugador que solo él puede ver.",
-        type: "Serie",
-        status: "En emisión",
-        year: 2024,
-        score: 9.4,
-        genres: ["Acción", "Fantasía Oscura", "Sobrenatural"],
-        bannerUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&auto=format&fit=crop&q=85",
-        posterUrl: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop&q=80",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        isPublished: true,
-        seasons: [{
-          id: "s1",
-          seasonNumber: 1,
-          title: "Temporada 1",
-          episodes: [
-            { id: "e1", episodeNumber: 1, title: "Soy el más débil de todos", durationMinutes: 24, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" },
-            { id: "e2", episodeNumber: 2, title: "Si hubiera tenido otra oportunidad", durationMinutes: 24, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" }
-          ]
-        }]
+        id: 'kage_shinobi',
+        title: 'Kage no Senshi: Crónicas del Shinobi',
+        year: 2026,
+        genres: ['Acción', 'Fantasía', 'Shonen', 'Sobrenatural'],
+        type: 'Serie',
+        status: 'En emisión',
+        rating: '16+',
+        quality: '4K',
+        views: 14500,
+        isFeatured: true,
+        posterUrl: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600&auto=format&fit=crop&q=80',
+        bannerUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1600&auto=format&fit=crop&q=80',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        description: 'En una Neo-Tokio consumida por la niebla cuántica y megacorporaciones de hechicería oscura, Ren, el último heredero del clan Kage, despierta una técnica de energía sombría prohibida para liberar a su hermana de la fortaleza celestial.',
+        episodes: [
+          { num: 1, title: 'La Chispa en la Oscuridad', duration: '24:10', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' },
+          { num: 2, title: 'Filamentos de Púrpura', duration: '23:45', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4' },
+          { num: 3, title: 'El Despertar del Vórtice', duration: '25:00', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' }
+        ]
       },
       {
-        id: "kimetsu-no-yaiba",
-        title: "Demon Slayer: Kimetsu no Yaiba",
-        altTitle: "Castillo Infinito",
-        synopsis: "Tanjiro Kamado emprende un viaje para vengar a su familia masacrada y encontrar una cura para su hermana Nezuko, convertida en demonio. La batalla decisiva contra Muzan Kibutsuji comienza.",
-        type: "Serie",
-        status: "Finalizado",
-        year: 2023,
-        score: 9.2,
-        genres: ["Acción", "Shonen", "Demonios"],
-        bannerUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1920&auto=format&fit=crop&q=85",
-        posterUrl: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        isPublished: true,
-        seasons: [{
-          id: "s1",
-          seasonNumber: 1,
-          title: "Castillo Infinito",
-          episodes: [
-            { id: "e1", episodeNumber: 1, title: "Hacia el Castillo del Destino", durationMinutes: 25, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" }
-          ]
-        }]
+        id: 'cyber_ronin',
+        title: 'Cyber Ronin: Éxodo 2099',
+        year: 2025,
+        genres: ['Acción', 'Ciencia ficción', 'Seinen'],
+        type: 'Película',
+        status: 'Finalizado',
+        rating: '18+',
+        quality: '1080P',
+        views: 8940,
+        isFeatured: false,
+        posterUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=600&auto=format&fit=crop&q=80',
+        bannerUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=1600&auto=format&fit=crop&q=80',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
+        description: 'Largometraje animado que narra la última defensa de la ciudadela flotante de Shinjuku por una legión de samuráis cibernéticos que desafían a una inteligencia artificial deificada.',
+        episodes: [
+          { num: 1, title: 'Película Completa (1080p)', duration: '1h 48m', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' }
+        ]
       },
       {
-        id: "suzume-movie",
-        title: "Suzume no Tojimari",
-        altTitle: "Suzume's Door Locking",
-        synopsis: "Suzume, una joven de 17 años de un tranquilo pueblo de Kyushu, se encuentra con un misterioso viajero que busca puertas que desencadenan desastres naturales por todo Japón.",
-        type: "Película",
-        status: "Finalizado",
-        year: 2022,
-        score: 9.1,
-        genres: ["Aventura", "Fantasía", "Drama"],
-        bannerUrl: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1920&auto=format&fit=crop&q=85",
-        posterUrl: "https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&auto=format&fit=crop&q=80",
-        videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        isPublished: true,
-        seasons: [{
-          id: "s1",
-          seasonNumber: 1,
-          title: "Película Completa",
-          episodes: [
-            { id: "e1", episodeNumber: 1, title: "Suzume (Película Completa HD)", durationMinutes: 122, videoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" }
-          ]
-        }]
+        id: 'sakura_vortex',
+        title: 'El Guardián del Vórtice Sagrado',
+        year: 2026,
+        genres: ['Fantasía', 'Sobrenatural', 'Aventura'],
+        type: 'OVA',
+        status: 'Finalizado',
+        rating: '13+',
+        quality: '1080P',
+        views: 5410,
+        isFeatured: false,
+        posterUrl: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=600&auto=format&fit=crop&q=80',
+        bannerUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&auto=format&fit=crop&q=80',
+        videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4',
+        description: 'Una aprendiz de miko y un ninja errante sellan fracturas interdimensionales que liberan espíritus corrompidos en los templos ancestrales del monte Fuji.',
+        episodes: [
+          { num: 1, title: 'Parte 1: El Sello Roto', duration: '32:10', videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }
+        ]
       }
     ];
 
-    // Subtítulos sincronizados para audio latino
-    const SAMPLE_SUBTITLES = [
-      { id: '1', startTime: 1, endTime: 4, text: "¡El despertar de la sombra ha comenzado!" },
-      { id: '2', startTime: 5, endTime: 9, text: "¿Acaso crees que este es el límite de mi poder?" },
-      { id: '3', startTime: 10, endTime: 15, text: "[Español Latino] ¡SURGE! (Comando de Invocación)" },
-      { id: '4', startTime: 16, endTime: 22, text: "A partir de este instante, lucharás bajo mis órdenes." }
-    ];
+    // ESTADO GLOBAL LOCAL
+    let animes = [];
+    let myList = [];
+    let currentTab = 'home';
+    let selectedGenre = 'Todos';
+    let searchQuery = '';
+    let currentModalAnime = null;
 
-    // --- INTRO ESTILO NETFLIX CON LA LETRA 'K' ---
-    const NetflixIntro = ({ onComplete }) => {
-      const [phase, setPhase] = useState('initial');
-
-      useEffect(() => {
-        // Sintetizador de sonido Ta-Dum cinematográfico
-        try {
-          const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) {
-            const ctx = new AudioCtx();
-            const osc1 = ctx.createOscillator();
-            const gain1 = ctx.createGain();
-            osc1.type = 'sawtooth';
-            osc1.frequency.setValueAtTime(55, ctx.currentTime);
-            osc1.frequency.exponentialRampToValueAtTime(32, ctx.currentTime + 1.8);
-            gain1.gain.setValueAtTime(0.7, ctx.currentTime);
-            gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.2);
-            osc1.connect(gain1);
-            gain1.connect(ctx.destination);
-            osc1.start();
-            osc1.stop(ctx.currentTime + 2.3);
-          }
-        } catch(e) {}
-
-        const t1 = setTimeout(() => setPhase('boom'), 200);
-        const t2 = setTimeout(() => setPhase('fade'), 2600);
-        const t3 = setTimeout(() => onComplete(), 3200);
-        return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
-      }, []);
-
-      return (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-700 select-none ${phase === 'fade' ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-          <button onClick={onComplete} className="absolute top-6 right-6 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono text-slate-300 border border-white/10">
-            Omitir [ESC]
-          </button>
-          <div className="flex flex-col items-center">
-            <div className={`transition-all duration-1000 ease-out transform ${phase === 'initial' ? 'scale-50 opacity-0' : phase === 'boom' ? 'scale-100 opacity-100' : 'scale-[2.5] opacity-0 blur-sm'}`}>
-              <svg viewBox="0 0 160 220" className="w-32 h-44 sm:w-44 sm:h-60" fill="none">
-                <defs>
-                  <linearGradient id="nfx-left" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#8A050B"/>
-                    <stop offset="100%" stopColor="#E50914"/>
-                  </linearGradient>
-                  <linearGradient id="nfx-diag" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FF262E"/>
-                    <stop offset="50%" stopColor="#E50914"/>
-                    <stop offset="100%" stopColor="#750409"/>
-                  </linearGradient>
-                </defs>
-                {/* Letra K Estilo Netflix */}
-                <path d="M28 10 L64 10 L64 200 C52 204 40 204 28 200 Z" fill="url(#nfx-left)" />
-                <path d="M54 126 L108 10 L144 10 L80 142 Z" fill="#E50914" />
-                <path d="M62 98 L94 98 L148 200 C136 204 122 204 110 200 L62 124 Z" fill="url(#nfx-diag)" />
-              </svg>
-            </div>
-            <div className={`mt-6 text-center transition-all duration-700 ${phase === 'boom' ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-[0.25em] text-white">
-                KAGE<span className="text-[#E50914]">STREAM</span>
-              </h1>
-              <p className="text-[11px] font-mono tracking-[0.3em] text-slate-400 mt-2">TU UNIVERSO ANIME</p>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    // --- REPRODUCTOR DE VIDEO CON SUBTÍTULOS LATINOS ---
-    const VideoPlayer = ({ anime, episodeNumber = 1, onClose }) => {
-      const videoRef = useRef(null);
-      const [currentTime, setCurrentTime] = useState(0);
-      const [duration, setDuration] = useState(100);
-      const [isPlaying, setIsPlaying] = useState(true);
-      const [subtitlesEnabled, setSubtitlesEnabled] = useState(true);
-      const [audioLang, setAudioLang] = useState("Español Latino (Oficial)");
-
-      const currentSub = SAMPLE_SUBTITLES.find(s => currentTime >= s.startTime && currentTime <= s.endTime);
-
-      const togglePlay = () => {
-        if (!videoRef.current) return;
-        if (videoRef.current.paused) {
-          videoRef.current.play();
-          setIsPlaying(true);
+    // INICIALIZACIÓN
+    function init() {
+      try {
+        const stored = localStorage.getItem('kagestream_animes_standalone');
+        if (stored) {
+          animes = JSON.parse(stored);
+          if (!Array.isArray(animes) || animes.length === 0) animes = [...DEFAULT_ANIMES];
         } else {
-          videoRef.current.pause();
-          setIsPlaying(false);
+          animes = [...DEFAULT_ANIMES];
+          saveAnimesToStorage();
         }
-      };
 
-      return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center">
-          <div className="absolute top-4 inset-x-4 flex items-center justify-between z-20 pointer-events-auto">
-            <div>
-              <span className="text-xs text-red-500 font-bold uppercase tracking-wider">Reproduciendo Ep. {episodeNumber}</span>
-              <h3 className="text-lg font-bold text-white drop-shadow">{anime.title}</h3>
-            </div>
-            <button onClick={onClose} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md">
-              <Icon name="x" className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="relative w-full h-full flex items-center justify-center" onClick={togglePlay}>
-            <video
-              ref={videoRef}
-              src={anime.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}
-              className="max-h-full max-w-full object-contain"
-              autoPlay
-              onTimeUpdate={(e) => setCurrentTime(e.target.currentTime)}
-              onLoadedMetadata={(e) => setDuration(e.target.duration)}
-            />
-
-            {/* Subtítulos en pantalla */}
-            {subtitlesEnabled && currentSub && (
-              <div className="absolute bottom-24 inset-x-8 text-center pointer-events-none">
-                <span className="inline-block px-4 py-1.5 rounded-lg bg-black/80 text-yellow-300 text-base sm:text-xl font-medium tracking-wide shadow-2xl backdrop-blur-sm border border-yellow-500/20">
-                  {currentSub.text}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Barra de Controles Inferior */}
-          <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent flex flex-col gap-2 z-20">
-            <input
-              type="range"
-              min="0"
-              max={duration || 100}
-              value={currentTime}
-              onChange={(e) => {
-                if (videoRef.current) videoRef.current.currentTime = Number(e.target.value);
-              }}
-              className="w-full accent-red-600 h-1.5 bg-white/20 rounded cursor-pointer"
-            />
-
-            <div className="flex items-center justify-between text-xs sm:text-sm text-slate-200">
-              <div className="flex items-center gap-4">
-                <button onClick={togglePlay} className="p-2 text-white hover:text-red-500 transition-colors">
-                  <Icon name={isPlaying ? "pause" : "play"} className="w-5 h-5" />
-                </button>
-                <span>{Math.floor(currentTime / 60)}:{Math.floor(currentTime % 60).toString().padStart(2, '0')} / {Math.floor(duration / 60)}:{Math.floor(duration % 60).toString().padStart(2, '0')}</span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {/* Selector de Audio */}
-                <select
-                  value={audioLang}
-                  onChange={(e) => setAudioLang(e.target.value)}
-                  className="bg-black/60 border border-white/20 rounded-lg px-2.5 py-1 text-xs text-white"
-                >
-                  <option>Español Latino (Oficial)</option>
-                  <option>Japonés (Original)</option>
-                  <option>Inglés (Doblaje)</option>
-                </select>
-
-                {/* Alternar Subtítulos */}
-                <button
-                  onClick={() => setSubtitlesEnabled(!subtitlesEnabled)}
-                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg border text-xs font-semibold ${subtitlesEnabled ? 'bg-red-600 border-red-500 text-white' : 'bg-black/50 border-white/20 text-slate-400'}`}
-                >
-                  <Icon name="subtitles" className="w-3.5 h-3.5" />
-                  <span>Sub: {subtitlesEnabled ? 'ON' : 'OFF'}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    // --- MODAL DETALLES DEL ANIME ---
-    const DetailsModal = ({ anime, onClose, onPlay, onDelete, isSaved, onToggleList }) => {
-      if (!anime) return null;
-      return (
-        <div className="fixed inset-0 z-40 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative w-full max-w-2xl bg-[#0d111a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-            <button onClick={onClose} className="absolute top-4 right-4 z-20 p-2 rounded-full bg-black/60 text-white hover:bg-white/20">
-              <Icon name="x" className="w-5 h-5" />
-            </button>
-
-            <div className="relative h-64 sm:h-80">
-              <img src={anime.bannerUrl || anime.posterUrl} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0d111a] via-[#0d111a]/40 to-transparent" />
-              <div className="absolute bottom-4 left-6 right-6 flex items-end justify-between">
-                <div>
-                  <span className="px-2 py-0.5 rounded bg-red-600 text-[10px] font-bold text-white uppercase">{anime.type}</span>
-                  <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">{anime.title}</h2>
-                  <p className="text-xs text-slate-300 font-mono">{anime.altTitle}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => onPlay(anime)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-lg">
-                    <Icon name="play" className="w-4 h-4" />
-                    <span>VER AHORA</span>
-                  </button>
-                  <button onClick={() => onToggleList(anime.id)} className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/10">
-                    <Icon name={isSaved ? "check" : "plus"} className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => onDelete(anime.id)} className="p-2 rounded-xl bg-red-950/80 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30" title="Borrar publicación">
-                    <Icon name="trash" className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-4 text-xs text-slate-400">
-                <span className="flex items-center gap-1 text-amber-400 font-bold"><Icon name="star" className="w-3.5 h-3.5" /> {anime.score}</span>
-                <span>{anime.year}</span>
-                <span>{anime.status}</span>
-                <div className="flex gap-1.5">
-                  {anime.genres.map(g => (
-                    <span key={g} className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-slate-300">{g}</span>
-                  ))}
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">{anime.synopsis}</p>
-
-              {/* Lista de episodios */}
-              <div className="pt-3 border-t border-white/10">
-                <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Episodios disponibles</h4>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                  {anime.seasons?.[0]?.episodes?.map(ep => (
-                    <div key={ep.id} onClick={() => onPlay(anime)} className="flex items-center justify-between p-2 rounded-lg bg-white/5 hover:bg-white/10 cursor-pointer text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="text-red-500 font-bold">Ep. {ep.episodeNumber}</span>
-                        <span className="text-white">{ep.title}</span>
-                      </div>
-                      <span className="text-slate-400 text-[11px]">{ep.durationMinutes} min</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    };
-
-    // --- MODAL DE SUBIR / PUBLICAR ANIME ---
-    const UploadModal = ({ isOpen, onClose, onSave }) => {
-      const [title, setTitle] = useState('');
-      const [synopsis, setSynopsis] = useState('');
-      const [type, setType] = useState('Serie');
-      const [posterUrl, setPosterUrl] = useState('');
-      const [bannerUrl, setBannerUrl] = useState('');
-      const [videoUrl, setVideoUrl] = useState('');
-      const [genres, setGenres] = useState('Acción, Fantasía');
-
-      if (!isOpen) return null;
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!title.trim()) return;
-        const newAnime = {
-          id: 'anime_' + Date.now(),
-          title,
-          synopsis: synopsis || 'Sin sinopsis disponible.',
-          type,
-          status: 'En emisión',
-          year: new Date().getFullYear(),
-          score: 9.0,
-          genres: genres.split(',').map(g => g.trim()),
-          posterUrl: posterUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80',
-          bannerUrl: bannerUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&auto=format&fit=crop&q=85',
-          videoUrl: videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-          isPublished: true,
-          seasons: [{
-            id: 's1',
-            seasonNumber: 1,
-            title: 'Temporada 1',
-            episodes: [{ id: 'e1', episodeNumber: 1, title: 'Episodio 1: Comienzo', durationMinutes: 24, videoUrl }]
-          }]
-        };
-        onSave(newAnime);
-        onClose();
-      };
-
-      return (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#0d111a] border border-white/10 rounded-2xl p-6 shadow-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Icon name="upload" className="w-4 h-4 text-red-500" />
-                <span>Subir y Publicar Contenido</span>
-              </h3>
-              <button onClick={onClose} className="p-1 rounded text-slate-400 hover:text-white"><Icon name="x" className="w-4 h-4" /></button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-3 text-xs">
-              <div>
-                <label className="block text-slate-400 mb-1">Título del Anime *</label>
-                <input required value={title} onChange={e => setTitle(e.target.value)} placeholder="Ej: Dragon Ball Daima" className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-slate-400 mb-1">Tipo</label>
-                  <select value={type} onChange={e => setType(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white">
-                    <option>Serie</option>
-                    <option>Película</option>
-                    <option>OVA</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-slate-400 mb-1">Géneros (separados por coma)</label>
-                  <input value={genres} onChange={e => setGenres(e.target.value)} className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1">URL del Video (MP4 / WebM / HLS)</label>
-                <input value={videoUrl} onChange={e => setVideoUrl(e.target.value)} placeholder="https://.../video.mp4" className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1">URL de Portada (Poster)</label>
-                <input value={posterUrl} onChange={e => setPosterUrl(e.target.value)} placeholder="https://.../poster.jpg" className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 mb-1">Sinopsis</label>
-                <textarea rows="3" value={synopsis} onChange={e => setSynopsis(e.target.value)} placeholder="Describe la historia..." className="w-full bg-black/50 border border-white/10 rounded-lg p-2 text-white" />
-              </div>
-
-              <div className="pt-3 flex justify-end gap-2">
-                <button type="button" onClick={onClose} className="px-4 py-2 rounded-lg bg-white/5 text-slate-300">Cancelar</button>
-                <button type="submit" className="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-500 font-bold text-white">Publicar Ahora</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      );
-    };
-
-    // --- APLICACIÓN PRINCIPAL ---
-    function App() {
-      const [animes, setAnimes] = useState(() => {
-        try {
-          const saved = localStorage.getItem('kagestream_animes');
-          return saved ? JSON.parse(saved) : DEFAULT_ANIMES;
-        } catch(e) {
-          return DEFAULT_ANIMES;
+        const storedList = localStorage.getItem('kagestream_mylist_standalone');
+        if (storedList) {
+          myList = JSON.parse(storedList);
         }
-      });
+      } catch (e) {
+        animes = [...DEFAULT_ANIMES];
+      }
 
-      const [myList, setMyList] = useState(() => {
-        try {
-          const saved = localStorage.getItem('kagestream_mylist');
-          return saved ? JSON.parse(saved) : [];
-        } catch(e) {
-          return [];
-        }
-      });
+      renderHero();
+      renderGenres();
+      renderCatalog();
+      updateMyListCount();
 
-      const [showIntro, setShowIntro] = useState(() => {
-        try {
-          return !sessionStorage.getItem('kagestream_intro_seen');
-        } catch(e) {
-          return true;
-        }
-      });
+      // Audio Ta-Dum intro
+      try {
+        playTaDum();
+      } catch(e) {}
 
-      const [activeTab, setActiveTab] = useState('home');
-      const [selectedAnime, setSelectedAnime] = useState(null);
-      const [playingAnime, setPlayingAnime] = useState(null);
-      const [uploadOpen, setUploadOpen] = useState(false);
-      const [searchQuery, setSearchQuery] = useState('');
-      const [bgScene, setBgScene] = useState('https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1920&auto=format&fit=crop&q=85');
-
-      // Guardar en LocalStorage al actualizar
-      useEffect(() => {
-        localStorage.setItem('kagestream_animes', JSON.stringify(animes));
-      }, [animes]);
-
-      useEffect(() => {
-        localStorage.setItem('kagestream_mylist', JSON.stringify(myList));
-      }, [myList]);
-
-      const handleIntroDone = () => {
-        try { sessionStorage.setItem('kagestream_intro_seen', 'true'); } catch(e) {}
-        setShowIntro(false);
-      };
-
-      // Borrar publicación
-      const handleDeleteAnime = (id) => {
-        if (confirm("¿Estás seguro de que deseas eliminar esta publicación de tu catálogo?")) {
-          setAnimes(prev => prev.filter(a => a.id !== id));
-          setMyList(prev => prev.filter(item => item !== id));
-          if (selectedAnime?.id === id) setSelectedAnime(null);
-          if (playingAnime?.id === id) setPlayingAnime(null);
-        }
-      };
-
-      const handleToggleList = (id) => {
-        setMyList(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
-      };
-
-      const handleSaveUpload = (newAnime) => {
-        setAnimes(prev => [newAnime, ...prev]);
-      };
-
-      // Filtrado por búsqueda y categoría
-      const filteredAnimes = animes.filter(a => {
-        const matchesSearch = a.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              a.genres.some(g => g.toLowerCase().includes(searchQuery.toLowerCase()));
-        if (!matchesSearch) return false;
-        if (activeTab === 'movies') return a.type === 'Película';
-        if (activeTab === 'series') return a.type === 'Serie';
-        if (activeTab === 'mylist') return myList.includes(a.id);
-        return true;
-      });
-
-      return (
-        <div className="relative min-h-screen">
-          {/* FONDO DINÁMICO DE ANIME */}
-          <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-            <img src={bgScene} className="w-full h-full object-cover filter brightness-[0.65] contrast-[1.1]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-[#07090e]/50 to-[#07090e]/80" />
-          </div>
-
-          {/* INTRO ESTILO NETFLIX (Solo al inicio de la sesión) */}
-          {showIntro && <NetflixIntro onComplete={handleIntroDone} />}
-
-          {/* BARRA DE NAVEGACIÓN SUPERIOR */}
-          <header className="sticky top-0 z-30 glass-panel border-b border-white/10 px-4 sm:px-8 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-6">
-              <div onClick={() => setActiveTab('home')} className="flex items-center gap-2 cursor-pointer">
-                <span className="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center font-extrabold text-white text-lg">K</span>
-                <span className="text-lg font-extrabold tracking-wider text-white">KAGE<span className="text-red-500">STREAM</span></span>
-              </div>
-
-              <nav className="hidden md:flex items-center gap-1 text-xs font-semibold text-slate-300">
-                {[
-                  { id: 'home', label: 'Inicio' },
-                  { id: 'series', label: 'Series' },
-                  { id: 'movies', label: 'Películas' },
-                  { id: 'mylist', label: 'Mi Lista' }
-                ].map(t => (
-                  <button
-                    key={t.id}
-                    onClick={() => setActiveTab(t.id)}
-                    className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === t.id ? 'bg-white/10 text-white font-bold' : 'hover:text-white'}`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </nav>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Buscador */}
-              <div className="relative hidden sm:block">
-                <Icon name="search" className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar anime, género..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="bg-black/50 border border-white/10 rounded-full pl-8 pr-4 py-1 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-red-500 w-44 lg:w-60"
-                />
-              </div>
-
-              {/* Botón Subir Publicación */}
-              <button
-                onClick={() => setUploadOpen(true)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold shadow-lg shadow-red-950/40"
-              >
-                <Icon name="upload" className="w-3.5 h-3.5" />
-                <span>Subir</span>
-              </button>
-            </div>
-          </header>
-
-          {/* CONTENIDO PRINCIPAL */}
-          <main className="max-w-7xl mx-auto px-4 sm:px-8 py-6 space-y-8">
-            {/* HERO SECTION (En la pestaña Inicio) */}
-            {activeTab === 'home' && animes.length > 0 && (
-              <div className="relative rounded-2xl overflow-hidden glass-panel border border-white/10 min-h-[340px] sm:min-h-[420px] flex items-end p-6 sm:p-10">
-                <img src={animes[0].bannerUrl} className="absolute inset-0 w-full h-full object-cover filter brightness-[0.7]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07090e] via-[#07090e]/40 to-transparent" />
-                
-                <div className="relative z-10 max-w-xl space-y-3">
-                  <span className="px-2 py-0.5 rounded bg-red-600 text-[10px] font-bold text-white uppercase">DESTACADO</span>
-                  <h1 className="text-3xl sm:text-5xl font-extrabold text-white leading-tight">{animes[0].title}</h1>
-                  <p className="text-xs sm:text-sm text-slate-300 line-clamp-3 leading-relaxed">{animes[0].synopsis}</p>
-                  
-                  <div className="flex items-center gap-3 pt-2">
-                    <button
-                      onClick={() => setPlayingAnime(animes[0])}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs sm:text-sm font-bold shadow-xl shadow-red-950/50"
-                    >
-                      <Icon name="play" className="w-4 h-4" />
-                      <span>REPRODUCIR</span>
-                    </button>
-                    <button
-                      onClick={() => setSelectedAnime(animes[0])}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold backdrop-blur-sm border border-white/10"
-                    >
-                      <Icon name="info" className="w-4 h-4" />
-                      <span>MÁS INFORMACIÓN</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SECCIÓN DE TÍTULOS Y TARJETAS */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg sm:text-xl font-bold text-white">
-                  {activeTab === 'home' ? 'Catálogo Completo' : activeTab === 'series' ? 'Series' : activeTab === 'movies' ? 'Películas' : 'Mi Lista'}
-                </h2>
-                <span className="text-xs text-slate-400 font-mono">{filteredAnimes.length} títulos</span>
-              </div>
-
-              {filteredAnimes.length === 0 ? (
-                <div className="text-center py-16 text-slate-400 text-sm">
-                  No se encontraron animes en esta sección.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-                  {filteredAnimes.map(anime => (
-                    <div
-                      key={anime.id}
-                      className="group relative rounded-xl overflow-hidden glass-panel border border-white/10 hover:border-red-500/50 transition-all flex flex-col"
-                    >
-                      <div
-                        className="relative aspect-[3/4] overflow-hidden bg-slate-900 cursor-pointer"
-                        onClick={() => setSelectedAnime(anime)}
-                      >
-                        <img src={anime.posterUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-90" />
-
-                        {/* Botón Reproducción Directa */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setPlayingAnime(anime); }}
-                          className="absolute inset-0 m-auto w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 hover:scale-110 transition-all shadow-xl"
-                        >
-                          <Icon name="play" className="w-4 h-4 ml-0.5" />
-                        </button>
-
-                        {/* BOTÓN BORRAR PUBLICACIÓN */}
-                        <button
-                          onClick={(e) => { e.stopPropagation(); handleDeleteAnime(anime.id); }}
-                          className="absolute top-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-red-600 text-slate-300 hover:text-white transition-all"
-                          title="Borrar publicación"
-                        >
-                          <Icon name="trash" className="w-3.5 h-3.5" />
-                        </button>
-
-                        <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[11px] text-white">
-                          <span className="flex items-center gap-1 font-bold"><Icon name="star" className="w-3 h-3 text-amber-400" /> {anime.score}</span>
-                          <span className="px-1.5 py-0.5 rounded bg-red-600 text-[10px] font-bold">{anime.type}</span>
-                        </div>
-                      </div>
-
-                      <div className="p-2.5 flex flex-col justify-between flex-grow">
-                        <h4 onClick={() => setSelectedAnime(anime)} className="text-xs sm:text-sm font-bold text-white line-clamp-1 hover:text-red-400 cursor-pointer">
-                          {anime.title}
-                        </h4>
-                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5 text-[11px] text-slate-400">
-                          <span>{anime.year}</span>
-                          <button onClick={() => handleToggleList(anime.id)} className="hover:text-white">
-                            <Icon name={myList.includes(anime.id) ? "check" : "plus"} className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </main>
-
-          {/* MODAL DETALLES */}
-          <DetailsModal
-            anime={selectedAnime}
-            onClose={() => setSelectedAnime(null)}
-            onPlay={(a) => { setSelectedAnime(null); setPlayingAnime(a); }}
-            onDelete={handleDeleteAnime}
-            isSaved={selectedAnime ? myList.includes(selectedAnime.id) : false}
-            onToggleList={handleToggleList}
-          />
-
-          {/* REPRODUCTOR VIDEO COMPLETO */}
-          {playingAnime && (
-            <VideoPlayer
-              anime={playingAnime}
-              onClose={() => setPlayingAnime(null)}
-            />
-          )}
-
-          {/* MODAL SUBIR ANIME */}
-          <UploadModal
-            isOpen={uploadOpen}
-            onClose={() => setUploadOpen(false)}
-            onSave={handleSaveUpload}
-          />
-        </div>
-      );
+      // Auto ocultar intro tras 2.8s
+      setTimeout(finishIntro, 2800);
     }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    function saveAnimesToStorage() {
+      try {
+        localStorage.setItem('kagestream_animes_standalone', JSON.stringify(animes));
+      } catch(e) {}
+    }
+
+    function saveMyListToStorage() {
+      try {
+        localStorage.setItem('kagestream_mylist_standalone', JSON.stringify(myList));
+      } catch(e) {}
+    }
+
+    // AUDIO TA-DUM NETFLIX SINTETIZADO (Web Audio API nativo sin archivos externos)
+    function playTaDum() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const t = ctx.currentTime;
+
+        // Primer golpe TA
+        const osc1 = ctx.createOscillator();
+        const g1 = ctx.createGain();
+        osc1.frequency.setValueAtTime(85, t);
+        osc1.frequency.exponentialRampToValueAtTime(35, t + 0.3);
+        g1.gain.setValueAtTime(0.35, t);
+        g1.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+        osc1.connect(g1);
+        g1.connect(ctx.destination);
+        osc1.start(t);
+        osc1.stop(t + 0.38);
+
+        // Segundo impacto DUMM
+        const t2 = t + 0.18;
+        const osc2 = ctx.createOscillator();
+        const g2 = ctx.createGain();
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(110, t2);
+        osc2.frequency.exponentialRampToValueAtTime(40, t2 + 1.2);
+        g2.gain.setValueAtTime(0.4, t2);
+        g2.gain.exponentialRampToValueAtTime(0.001, t2 + 1.5);
+        osc2.connect(g2);
+        g2.connect(ctx.destination);
+        osc2.start(t2);
+        osc2.stop(t2 + 1.6);
+      } catch(e) {}
+    }
+
+    function finishIntro() {
+      const intro = document.getElementById('netflix-intro');
+      if (intro) {
+        intro.classList.add('hidden-intro');
+        setTimeout(() => intro.style.display = 'none', 500);
+      }
+    }
+
+    // RENDER HERO
+    function renderHero() {
+      const heroAnime = animes.find(a => a.isFeatured) || animes[0];
+      if (!heroAnime) return;
+
+      document.getElementById('hero-bg').src = heroAnime.bannerUrl || heroAnime.posterUrl;
+      document.getElementById('hero-title').textContent = heroAnime.title;
+      document.getElementById('hero-desc').textContent = heroAnime.description;
+      document.getElementById('hero-quality').textContent = heroAnime.quality || 'HD';
+      document.getElementById('hero-rating').textContent = heroAnime.rating || '13+';
+      document.getElementById('hero-year').textContent = heroAnime.year;
+
+      const isSaved = myList.includes(heroAnime.id);
+      document.getElementById('hero-btn-list').textContent = isSaved ? '✓ En Mi Lista' : '+ Mi Lista';
+      document.getElementById('hero-btn-list').style.borderColor = isSaved ? '#E50914' : '';
+    }
+
+    function playHeroAnime() {
+      const heroAnime = animes.find(a => a.isFeatured) || animes[0];
+      if (heroAnime) openPlayer(heroAnime);
+    }
+
+    function viewHeroDetails() {
+      const heroAnime = animes.find(a => a.isFeatured) || animes[0];
+      if (heroAnime) openDetails(heroAnime);
+    }
+
+    function toggleHeroList() {
+      const heroAnime = animes.find(a => a.isFeatured) || animes[0];
+      if (!heroAnime) return;
+      toggleList(heroAnime.id);
+      renderHero();
+    }
+
+    // GÉNEROS
+    function renderGenres() {
+      const genreSet = new Set(['Todos']);
+      animes.forEach(a => (a.genres || []).forEach(g => genreSet.add(g)));
+      
+      const bar = document.getElementById('genre-bar');
+      bar.innerHTML = '';
+
+      genreSet.forEach(g => {
+        const btn = document.createElement('button');
+        btn.className = `btn ${g === selectedGenre ? 'btn-red' : 'btn-dark'}`;
+        btn.style.padding = '6px 14px';
+        btn.style.fontSize = '12px';
+        btn.style.whiteSpace = 'nowrap';
+        btn.textContent = g;
+        btn.onclick = () => {
+          selectedGenre = g;
+          renderGenres();
+          renderCatalog();
+        };
+        bar.appendChild(btn);
+      });
+    }
+
+    // CATÁLOGO DE ANIMES
+    function renderCatalog() {
+      const container = document.getElementById('anime-container');
+      const empty = document.getElementById('empty-state');
+      container.innerHTML = '';
+
+      let list = animes;
+
+      // Filtro por Tab
+      if (currentTab === 'series') {
+        list = list.filter(a => a.type === 'Serie');
+      } else if (currentTab === 'movies') {
+        list = list.filter(a => a.type === 'Película' || a.type === 'OVA');
+      } else if (currentTab === 'mylist') {
+        list = list.filter(a => myList.includes(a.id));
+      }
+
+      // Filtro por Género
+      if (selectedGenre !== 'Todos') {
+        list = list.filter(a => (a.genres || []).includes(selectedGenre));
+      }
+
+      // Filtro por Búsqueda
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(a => 
+          a.title.toLowerCase().includes(q) || 
+          (a.genres || []).some(g => g.toLowerCase().includes(q))
+        );
+      }
+
+      document.getElementById('catalog-count').textContent = `(${list.length} títulos)`;
+
+      if (list.length === 0) {
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      list.forEach(anime => {
+        const isSaved = myList.includes(anime.id);
+        const card = document.createElement('div');
+        card.className = 'anime-card animate-fade';
+        card.innerHTML = `
+          <div class="poster-wrap" onclick="openDetailsById('${anime.id}')">
+            <img src="${anime.posterUrl}" alt="${anime.title}" loading="lazy" />
+            <div style="position: absolute; top: 8px; left: 8px; z-index: 5; display: flex; gap: 4px;">
+              <span class="badge badge-red" style="font-size: 10px;">${anime.quality || 'HD'}</span>
+            </div>
+            <div class="card-overlay">
+              <h4 style="font-size: 14px; font-weight: 700; color: white; margin-bottom: 4px; line-height: 1.2;">${anime.title}</h4>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8;">
+                <span>${anime.type || 'Anime'} • ${anime.year}</span>
+                <span>👁 ${anime.views || 0}</span>
+              </div>
+            </div>
+          </div>
+          <div style="padding: 10px; display: flex; justify-content: space-between; align-items: center; background: var(--bg-card);">
+            <button class="btn btn-red" onclick="openPlayerById('${anime.id}')" style="padding: 6px 12px; font-size: 12px; flex: 1; margin-right: 6px;">
+              ▶ Ver
+            </button>
+            <button class="btn btn-dark" onclick="toggleList('${anime.id}')" style="padding: 6px 10px; font-size: 12px; border-color: ${isSaved ? '#E50914' : ''}; color: ${isSaved ? '#ff4d56' : 'white'};" title="${isSaved ? 'En Mi Lista' : 'Agregar a Mi Lista'}">
+              ${isSaved ? '✓' : '+'}
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // NAVEGACIÓN TABS
+    function setTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('btn-red'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.add('btn-dark'));
+      
+      const activeBtn = document.getElementById(`nav-${tab}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('btn-dark');
+        activeBtn.classList.add('btn-red');
+      }
+
+      const titles = {
+        home: '🔥 Todos los Animes',
+        series: '📺 Series Anime',
+        movies: '🎬 Películas y OVAs',
+        mylist: '📑 Mi Lista Personal'
+      };
+      document.getElementById('section-title').innerHTML = `<span>${titles[tab] || 'Catálogo'}</span>`;
+      renderCatalog();
+    }
+
+    function handleSearch(val) {
+      searchQuery = val;
+      renderCatalog();
+    }
+
+    // MI LISTA
+    function toggleList(animeId) {
+      const idx = myList.indexOf(animeId);
+      if (idx >= 0) {
+        myList.splice(idx, 1);
+        showToast('Eliminado de Mi Lista');
+      } else {
+        myList.push(animeId);
+        showToast('Añadido a Mi Lista');
+      }
+      saveMyListToStorage();
+      updateMyListCount();
+      renderCatalog();
+      renderHero();
+      if (currentModalAnime && currentModalAnime.id === animeId) {
+        updateModalListButton();
+      }
+    }
+
+    function updateMyListCount() {
+      document.getElementById('mylist-count').textContent = myList.length;
+    }
+
+    // REPRODUCTOR VIDEO
+    function openPlayer(anime, epUrl, epTitle) {
+      const video = document.getElementById('main-video');
+      const url = epUrl || anime.videoUrl || (anime.episodes && anime.episodes[0] ? anime.episodes[0].videoUrl : '');
+      
+      document.getElementById('player-title').textContent = anime.title;
+      document.getElementById('player-sub').textContent = epTitle || (anime.episodes && anime.episodes[0] ? anime.episodes[0].title : 'Película Principal');
+      document.getElementById('player-desc').textContent = anime.description;
+      
+      video.src = url;
+      video.poster = anime.bannerUrl || anime.posterUrl;
+      video.load();
+      video.play().catch(e => console.log('Autoplay handled'));
+
+      document.getElementById('player-modal').classList.add('active');
+
+      // Incrementar vistas
+      anime.views = (anime.views || 0) + 1;
+      saveAnimesToStorage();
+      renderCatalog();
+    }
+
+    function openPlayerById(id) {
+      const a = animes.find(item => item.id === id);
+      if (a) openPlayer(a);
+    }
+
+    function closePlayer() {
+      const video = document.getElementById('main-video');
+      video.pause();
+      video.src = '';
+      document.getElementById('player-modal').classList.remove('active');
+    }
+
+    function toggleFullscreenVideo() {
+      const video = document.getElementById('main-video');
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      }
+    }
+
+    // MODAL DETALLES
+    function openDetails(anime) {
+      currentModalAnime = anime;
+      document.getElementById('modal-banner').src = anime.bannerUrl || anime.posterUrl;
+      document.getElementById('modal-title').textContent = anime.title;
+      document.getElementById('modal-type').textContent = (anime.type || 'Serie').toUpperCase();
+      document.getElementById('modal-quality').textContent = anime.quality || 'HD';
+      document.getElementById('modal-status').textContent = (anime.status || 'En emisión').toUpperCase();
+      document.getElementById('modal-year').textContent = anime.year;
+      document.getElementById('modal-views').textContent = `👁 ${(anime.views || 0).toLocaleString()} vistas`;
+      document.getElementById('modal-desc').textContent = anime.description;
+
+      // Géneros
+      const gBox = document.getElementById('modal-genres');
+      gBox.innerHTML = '';
+      (anime.genres || []).forEach(g => {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-gray';
+        badge.textContent = g;
+        gBox.appendChild(badge);
+      });
+
+      updateModalListButton();
+
+      // Episodios
+      const epBox = document.getElementById('modal-episodes');
+      epBox.innerHTML = '';
+      const eps = anime.episodes || [
+        { num: 1, title: 'Episodio 1: Inicio de la Historia', duration: '24:00', videoUrl: anime.videoUrl }
+      ];
+
+      eps.forEach(ep => {
+        const item = document.createElement('div');
+        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border-subtle); cursor: pointer; transition: background 0.2s;';
+        item.innerHTML = `
+          <div>
+            <span style="color: var(--brand-red); font-weight: 700; margin-right: 8px;">EP ${ep.num}</span>
+            <span style="color: #f1f5f9; font-size: 13px;">${ep.title}</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <span style="color: #64748b; font-size: 12px;">${ep.duration}</span>
+            <span class="btn btn-red" style="padding: 4px 8px; font-size: 11px;">▶</span>
+          </div>
+        `;
+        item.onclick = () => {
+          closeModal('details-modal');
+          openPlayer(anime, ep.videoUrl, `Episodio ${ep.num}: ${ep.title}`);
+        };
+        epBox.appendChild(item);
+      });
+
+      document.getElementById('details-modal').classList.add('active');
+    }
+
+    function openDetailsById(id) {
+      const a = animes.find(item => item.id === id);
+      if (a) openDetails(a);
+    }
+
+    function updateModalListButton() {
+      if (!currentModalAnime) return;
+      const isSaved = myList.includes(currentModalAnime.id);
+      const btn = document.getElementById('modal-list-btn');
+      btn.textContent = isSaved ? '✓ En Mi Lista' : '+ Mi Lista';
+      btn.style.borderColor = isSaved ? '#E50914' : '';
+      btn.style.color = isSaved ? '#ff4d56' : '';
+    }
+
+    function toggleDetailsList() {
+      if (!currentModalAnime) return;
+      toggleList(currentModalAnime.id);
+    }
+
+    function playDetailsAnime() {
+      if (!currentModalAnime) return;
+      closeModal('details-modal');
+      openPlayer(currentModalAnime);
+    }
+
+    function deleteCurrentModalAnime() {
+      if (!currentModalAnime) return;
+      if (confirm(`¿Estás seguro de eliminar "${currentModalAnime.title}" del catálogo?`)) {
+        animes = animes.filter(a => a.id !== currentModalAnime.id);
+        myList = myList.filter(id => id !== currentModalAnime.id);
+        saveAnimesToStorage();
+        saveMyListToStorage();
+        closeModal('details-modal');
+        renderHero();
+        renderGenres();
+        renderCatalog();
+        updateMyListCount();
+        showToast('Anime eliminado con éxito');
+      }
+    }
+
+    // MODAL SUBIR ANIME
+    function openUploadModal() {
+      document.getElementById('upload-modal').classList.add('active');
+    }
+
+    function handleUploadSubmit(e) {
+      e.preventDefault();
+      const title = document.getElementById('up-title').value.trim();
+      const type = document.getElementById('up-type').value;
+      const year = parseInt(document.getElementById('up-year').value) || 2026;
+      const genresRaw = document.getElementById('up-genres').value;
+      const posterUrl = document.getElementById('up-poster').value.trim();
+      const videoUrl = document.getElementById('up-video').value.trim();
+      const desc = document.getElementById('up-desc').value.trim() || 'Sin descripción disponible.';
+
+      const genres = genresRaw.split(',').map(g => g.trim()).filter(Boolean);
+
+      const newAnime = {
+        id: 'anime_' + Date.now(),
+        title,
+        type,
+        year,
+        genres: genres.length > 0 ? genres : ['Acción'],
+        posterUrl: posterUrl || 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=600',
+        bannerUrl: posterUrl || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=1600',
+        videoUrl: videoUrl || 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        description: desc,
+        status: 'En emisión',
+        quality: '1080P',
+        views: 1,
+        isFeatured: false,
+        episodes: [
+          { num: 1, title: 'Episodio 1: Estreno', duration: '24:00', videoUrl: videoUrl }
+        ]
+      };
+
+      animes.unshift(newAnime);
+      saveAnimesToStorage();
+      closeModal('upload-modal');
+      renderGenres();
+      renderCatalog();
+      showToast(`"${title}" subido y publicado correctamente`);
+      e.target.reset();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function resetCatalog() {
+      if (confirm('¿Restablecer el catálogo con los títulos de demostración iniciales?')) {
+        animes = [...DEFAULT_ANIMES];
+        saveAnimesToStorage();
+        renderHero();
+        renderGenres();
+        renderCatalog();
+        showToast('Catálogo restablecido');
+      }
+    }
+
+    // TOAST NOTIFICADOR
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    // CERRAR MODALES CON TECLA ESCAPE
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePlayer();
+        closeModal('details-modal');
+        closeModal('upload-modal');
+      }
+    });
+
+    // INICIAR AL CARGAR
+    window.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>

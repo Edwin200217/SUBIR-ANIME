@@ -565,6 +565,36 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </p>
           </div>
 
+          {/* Standalone HTML Exporter */}
+          <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div className="text-sm font-bold text-cyan-300 flex items-center gap-2">
+                <span>📦</span>
+                <span>Exportar como Archivo HTML Único (100% Autónomo)</span>
+              </div>
+              <div className="text-xs text-slate-400 mt-1">
+                Un solo archivo con todo el código integrado (HTML + CSS + JS nativo). No requiere servidores ni compiladores; abre inmediatamente al hacer doble clic o subir a cualquier hosting (Netlify, GitHub Pages, Vercel, cPanel).
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <a
+                href="./standalone.html"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs transition-all whitespace-nowrap"
+              >
+                <span>↗ Abrir</span>
+              </a>
+              <a
+                href="./standalone.html"
+                download="index.html"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs transition-all active:scale-95 shadow-lg shadow-cyan-900/30 whitespace-nowrap"
+              >
+                <span>⬇ Descargar index.html</span>
+              </a>
+            </div>
+          </div>
+
           <div className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <div className="text-sm font-bold text-white">Cargar contenido de demostración (DEMO)</div>
